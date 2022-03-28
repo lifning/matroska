@@ -38,10 +38,10 @@ impl MkvMuxer {
     pub fn matroska() -> MkvMuxer {
         MkvMuxer {
             header: EBMLHeader {
-                version: 1,
-                read_version: 1,
-                max_id_length: 4,
-                max_size_length: 8,
+                version: Some(1),
+                read_version: Some(1),
+                max_id_length: Some(4),
+                max_size_length: Some(8),
                 doc_type: String::from("matroska"),
                 doc_type_version: 4,
                 doc_type_read_version: 2,
@@ -60,10 +60,10 @@ impl MkvMuxer {
     pub fn webm() -> MkvMuxer {
         MkvMuxer {
             header: EBMLHeader {
-                version: 1,
-                read_version: 1,
-                max_id_length: 4,
-                max_size_length: 8,
+                version: Some(1),
+                read_version: Some(1),
+                max_id_length: Some(4),
+                max_size_length: Some(8),
                 doc_type: String::from("webm"),
                 doc_type_version: 1,
                 doc_type_read_version: 1,

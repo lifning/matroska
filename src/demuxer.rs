@@ -338,6 +338,23 @@ mod tests {
     use super::*;
 
     const webm: &[u8] = include_bytes!("../assets/bbb-vp9-opus.webm");
+    const unknown_elements: &[u8] = include_bytes!("../assets/unknown_ebml_elements.mkv");
+
+    fn context(data: &'static [u8]) {
+        let mut context = Context::new(
+            Box::new(MkvDemuxer::new()),
+            Box::new(AccReader::new(Cursor::new(data))),
+        );
+
+        println!("{:?}", context.read_headers().unwrap());
+
+        while let Ok(event) = context.read_event() {
+            println!("event: {:?}", event);
+            if let Event::Eof = event {
+                break;
+            }
+        }
+    }
 
     #[test]
     fn parse_headers() {
@@ -374,19 +391,12 @@ mod tests {
     }
 
     #[test]
-    fn context() {
-        let mut context = Context::new(
-            Box::new(MkvDemuxer::new()),
-            Box::new(AccReader::new(Cursor::new(webm))),
-        );
+    fn known_ebml_elements() {
+        context(webm);
+    }
 
-        println!("{:?}", context.read_headers().unwrap());
-
-        while let Ok(event) = context.read_event() {
-            println!("event: {:?}", event);
-            if let Event::Eof = event {
-                break;
-            }
-        }
+    #[test]
+    fn unknown_ebml_elements() {
+        context(unknown_elements);
     }
 }

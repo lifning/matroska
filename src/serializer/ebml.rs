@@ -4,7 +4,7 @@ use nom::AsBytes;
 
 use crate::ebml::EBMLHeader;
 use crate::serializer::cookie_utils::{
-    gen_at_offset, gen_skip, gen_slice, set_be_f64, set_be_i8, tuple,
+    gen_at_offset, gen_opt, gen_skip, gen_slice, set_be_f64, set_be_i8, tuple,
 };
 
 const ALLOWED_ID_VALUES: u64 = (1u64 << 56) - 1;
@@ -281,10 +281,18 @@ pub(crate) fn gen_ebml_header<'a, 'b>(
             0x1A45DFA3,
             vint_size(h.capacity() as u64)?,
             tuple((
-                gen_ebml_uint_l(0x4286, h.version, || Ok(1)),
-                gen_ebml_uint_l(0x42F7, h.read_version, || Ok(1)),
-                gen_ebml_uint_l(0x42F2, h.max_id_length, || Ok(1)),
-                gen_ebml_uint_l(0x42F3, h.max_size_length, || Ok(1)),
+                gen_opt(h.version.as_ref(), |v| {
+                    gen_ebml_uint_l(0x4286, *v, || Ok(1))
+                }),
+                gen_opt(h.read_version.as_ref(), |v| {
+                    gen_ebml_uint_l(0x42F7, *v, || Ok(1))
+                }),
+                gen_opt(h.max_id_length.as_ref(), |v| {
+                    gen_ebml_uint_l(0x42F2, *v, || Ok(1))
+                }),
+                gen_opt(h.max_size_length.as_ref(), |v| {
+                    gen_ebml_uint_l(0x42F3, *v, || Ok(1))
+                }),
                 gen_ebml_str(0x4282, &h.doc_type),
                 gen_ebml_uint_l(0x4287, h.doc_type_version, || Ok(1)),
                 gen_ebml_uint_l(0x4285, h.doc_type_read_version, || Ok(1)),
@@ -537,10 +545,10 @@ mod tests {
       fn test_ebml_header(version: u8, read_version: u8, max_id_length: u8, max_size_length: u8, doc_type: String,
         doc_type_version: u8, doc_type_read_version: u8) -> bool {
         let header = EBMLHeader {
-          version: version as u64,
-          read_version: read_version as u64,
-          max_id_length: max_id_length as u64,
-          max_size_length: max_size_length as u64,
+          version: Some(version as u64),
+          read_version: Some(read_version as u64),
+          max_id_length: Some(max_id_length as u64),
+          max_size_length: Some(max_size_length as u64),
           doc_type,
           doc_type_version: doc_type_version as u64,
           doc_type_read_version: doc_type_read_version as u64

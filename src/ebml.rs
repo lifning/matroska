@@ -258,12 +258,16 @@ pub fn skip_void(input: &[u8]) -> IResult<&[u8], &[u8], Error> {
         .and_then(|(i, (_, size))| take(usize_error(input, size)?)(i))
 }
 
+pub fn skip_unknown(input: &[u8]) -> IResult<&[u8], &[u8], Error> {
+    pair(vid, vint)(input).and_then(|(i, (_, size))| take(usize_error(input, size)?)(i))
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct EBMLHeader {
-    pub version: u64,
-    pub read_version: u64,
-    pub max_id_length: u64,
-    pub max_size_length: u64,
+    pub version: Option<u64>,
+    pub read_version: Option<u64>,
+    pub max_id_length: Option<u64>,
+    pub max_size_length: Option<u64>,
     pub doc_type: String,
     pub doc_type_version: u64,
     pub doc_type_read_version: u64,
@@ -284,10 +288,10 @@ pub fn ebml_header(input: &[u8]) -> IResult<&[u8], EBMLHeader, Error> {
             Ok((
                 i,
                 EBMLHeader {
-                    version: value_error(input, t.0)?,
-                    read_version: value_error(input, t.1)?,
-                    max_id_length: value_error(input, t.2)?,
-                    max_size_length: value_error(input, t.3)?,
+                    version: t.0,
+                    read_version: t.1,
+                    max_id_length: t.2,
+                    max_size_length: t.3,
                     doc_type: value_error(input, t.4)?,
                     doc_type_version: value_error(input, t.5)?,
                     doc_type_read_version: value_error(input, t.6)?,
