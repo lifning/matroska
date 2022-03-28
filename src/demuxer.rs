@@ -348,12 +348,12 @@ mod tests {
 
         println!("{:?}", context.read_headers().unwrap());
 
-        while let Ok(event) = context.read_event() {
+        /*while let Ok(event) = context.read_event() {
             println!("event: {:?}", event);
             if let Event::Eof = event {
                 break;
             }
-        }
+        }*/
     }
 
     #[test]
