@@ -14,8 +14,10 @@ path = "src/lib.rs"
 [dependencies]
 nom = "7.0"
 cookie-factory = "0.3"
-av-data = "0.3"
-av-format = "0.5"
+av-data = { git = "https://github.com/lifning/rust-av" }
+av-format = { git = "https://github.com/lifning/rust-av" }
+#av-data = { path = "../rust-av/data" }
+#av-format = { path = "../rust-av/format" }
 circular = "0.3"
 log = "0.4"
 
